@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { Store, ShoppingBag, LayoutDashboard, LogOut, User, MessageCircle, Settings, ShieldAlert } from 'lucide-react';
+import { Store, ShoppingBag, LayoutDashboard, LogOut, MessageCircle, ShieldAlert } from 'lucide-react';
 import api from '../../services/api';
 
 interface SidebarProps {

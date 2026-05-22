@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/layout/Sidebar';
 import api from '../services/api';
@@ -79,7 +79,6 @@ const AdminDashboard = () => {
                 )}
                 {sellers.map(seller => {
                   const isExpired = seller.subscriptionExpiresAt ? new Date(seller.subscriptionExpiresAt) < new Date() : true;
-                  const isFree = seller.planType === 'free';
                   
                   return (
                     <tr key={seller.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
