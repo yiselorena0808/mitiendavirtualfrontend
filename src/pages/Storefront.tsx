@@ -173,40 +173,68 @@ const Storefront = () => {
       <div className="container" style={{ display: 'flex', gap: '3rem', flexWrap: 'wrap' }}>
         <aside style={{ flex: '0 0 250px' }}>
           <div style={{ position: 'sticky', top: '6rem' }}>
-            <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}><Search size={20} /> Buscar</h3>
-            <input 
-              type="text" 
-              placeholder="Ej. Zapatos..." 
-              className="input-field" 
-              value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-              style={{ marginBottom: '2rem' }}
-            />
+            <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem', color: 'var(--text-secondary)', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
+              <Search size={16} /> Buscar
+            </h3>
+            <div style={{ position: 'relative', marginBottom: '2rem' }}>
+              <input 
+                type="text" 
+                placeholder="Ej. Zapatos, Ropa..." 
+                className="input-field" 
+                value={searchTerm}
+                onChange={e => setSearchTerm(e.target.value)}
+                style={{ paddingLeft: '2.5rem', borderRadius: '9999px', background: 'var(--bg-glass)', border: '1px solid rgba(255,255,255,0.1)' }}
+              />
+              <Search size={18} color="var(--text-secondary)" style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)' }} />
+            </div>
 
             {categories.length > 0 && (
-              <>
-                <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}><Filter size={20} /> Categorías</h3>
-                <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                  <li>
-                    <button 
-                      onClick={() => setSelectedCategory(null)}
-                      style={{ background: 'transparent', border: 'none', color: selectedCategory === null ? 'var(--accent-primary)' : 'var(--text-secondary)', cursor: 'pointer', textAlign: 'left', fontWeight: selectedCategory === null ? 600 : 400 }}
-                    >
-                      Todas
-                    </button>
-                  </li>
+              <div style={{ marginBottom: '2rem' }}>
+                <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem', color: 'var(--text-secondary)', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                  <Filter size={16} /> Categorías
+                </h3>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                  <button 
+                    onClick={() => setSelectedCategory(null)}
+                    style={{ 
+                      padding: '0.5rem 1.25rem', 
+                      borderRadius: '9999px', 
+                      border: selectedCategory === null ? '1px solid var(--accent-primary)' : '1px solid rgba(255,255,255,0.1)', 
+                      background: selectedCategory === null ? 'rgba(99, 102, 241, 0.15)' : 'var(--bg-glass)', 
+                      color: selectedCategory === null ? 'var(--accent-primary)' : 'var(--text-primary)', 
+                      cursor: 'pointer', 
+                      fontWeight: 500,
+                      transition: 'all 0.3s ease',
+                      boxShadow: selectedCategory === null ? '0 0 10px rgba(99, 102, 241, 0.2)' : 'none'
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
+                    onMouseLeave={e => e.currentTarget.style.transform = 'none'}
+                  >
+                    Todas
+                  </button>
                   {categories.map((cat: any) => (
-                    <li key={cat.id}>
-                      <button 
-                        onClick={() => setSelectedCategory(cat.id)}
-                        style={{ background: 'transparent', border: 'none', color: selectedCategory === cat.id ? 'var(--accent-primary)' : 'var(--text-secondary)', cursor: 'pointer', textAlign: 'left', fontWeight: selectedCategory === cat.id ? 600 : 400 }}
-                      >
-                        {cat.name}
-                      </button>
-                    </li>
+                    <button 
+                      key={cat.id}
+                      onClick={() => setSelectedCategory(cat.id)}
+                      style={{ 
+                        padding: '0.5rem 1.25rem', 
+                        borderRadius: '9999px', 
+                        border: selectedCategory === cat.id ? '1px solid var(--accent-primary)' : '1px solid rgba(255,255,255,0.1)', 
+                        background: selectedCategory === cat.id ? 'rgba(99, 102, 241, 0.15)' : 'var(--bg-glass)', 
+                        color: selectedCategory === cat.id ? 'var(--accent-primary)' : 'var(--text-primary)', 
+                        cursor: 'pointer', 
+                        fontWeight: 500,
+                        transition: 'all 0.3s ease',
+                        boxShadow: selectedCategory === cat.id ? '0 0 10px rgba(99, 102, 241, 0.2)' : 'none'
+                      }}
+                      onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
+                      onMouseLeave={e => e.currentTarget.style.transform = 'none'}
+                    >
+                      {cat.name}
+                    </button>
                   ))}
-                </ul>
-              </>
+                </div>
+              </div>
             )}
           </div>
         </aside>
