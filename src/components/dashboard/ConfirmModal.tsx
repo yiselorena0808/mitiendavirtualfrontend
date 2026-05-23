@@ -25,14 +25,14 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-content animate-fade-in" style={{ maxWidth: '400px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
+    <div className="drawer-overlay" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem', zIndex: 100 }}>
+      <div className="glass-panel animate-fade-in" style={{ background: 'var(--bg-secondary)', width: '100%', maxWidth: '400px', padding: '2rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             {isDangerous && <AlertTriangle size={24} color="#ef4444" />}
             <h2 className="text-xl" style={{ margin: 0 }}>{title}</h2>
           </div>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }}>
+          <button onClick={onClose} className="btn" style={{ padding: '0.5rem' }}>
             <X size={20} />
           </button>
         </div>
@@ -42,7 +42,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
         </p>
 
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
-          <button onClick={onClose} className="btn" style={{ background: 'var(--bg-secondary)', color: 'var(--text-primary)' }}>
+          <button onClick={onClose} className="btn">
             {cancelText}
           </button>
           <button 

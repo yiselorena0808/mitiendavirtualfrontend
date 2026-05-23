@@ -54,21 +54,21 @@ const StoreModal: React.FC<StoreModalProps> = ({ isOpen, onClose, onSave, initia
   };
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-content animate-fade-in" style={{ maxWidth: '500px' }}>
+    <div className="drawer-overlay" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+      <div className="glass-panel animate-fade-in" style={{ background: 'var(--bg-secondary)', width: '100%', maxWidth: '500px', padding: '2rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
           <h2 className="text-2xl">{initialData ? 'Editar Tienda' : 'Nueva Tienda'}</h2>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }}>
-            <X size={24} />
+          <button onClick={onClose} className="btn" style={{ padding: '0.5rem' }}>
+            <X size={20} />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <div>
-            <label className="form-label">Nombre de la Tienda</label>
+          <div className="input-group" style={{ marginBottom: 0 }}>
+            <label className="input-label">Nombre de la Tienda</label>
             <input 
               type="text" 
-              className="form-input" 
+              className="input-field" 
               value={name} 
               onChange={e => setName(e.target.value)} 
               required 
@@ -76,11 +76,11 @@ const StoreModal: React.FC<StoreModalProps> = ({ isOpen, onClose, onSave, initia
             />
           </div>
 
-          <div>
-            <label className="form-label">URL de la Tienda (Slug)</label>
+          <div className="input-group" style={{ marginBottom: 0 }}>
+            <label className="input-label">URL de la Tienda (Slug)</label>
             <input 
               type="text" 
-              className="form-input" 
+              className="input-field" 
               value={slug} 
               onChange={e => setSlug(e.target.value)} 
               required 
@@ -91,21 +91,21 @@ const StoreModal: React.FC<StoreModalProps> = ({ isOpen, onClose, onSave, initia
             </p>
           </div>
 
-          <div>
-            <label className="form-label">Número de WhatsApp (Opcional)</label>
+          <div className="input-group" style={{ marginBottom: 0 }}>
+            <label className="input-label">Número de WhatsApp (Opcional)</label>
             <input 
               type="text" 
-              className="form-input" 
+              className="input-field" 
               value={whatsappNumber} 
               onChange={e => setWhatsappNumber(e.target.value)} 
               placeholder="Ej: 573001234567"
             />
           </div>
           
-          <div>
-            <label className="form-label">Descripción Breve (Opcional)</label>
+          <div className="input-group" style={{ marginBottom: 0 }}>
+            <label className="input-label">Descripción Breve (Opcional)</label>
             <textarea 
-              className="form-input" 
+              className="input-field" 
               value={description} 
               onChange={e => setDescription(e.target.value)} 
               placeholder="¿Qué vendes en tu tienda?"
@@ -114,7 +114,7 @@ const StoreModal: React.FC<StoreModalProps> = ({ isOpen, onClose, onSave, initia
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: '1rem' }}>
-            <button type="button" onClick={onClose} className="btn" style={{ background: 'var(--bg-secondary)', color: 'var(--text-primary)' }}>
+            <button type="button" onClick={onClose} className="btn">
               Cancelar
             </button>
             <button type="submit" className="btn btn-primary" disabled={isSubmitting}>

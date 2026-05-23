@@ -36,26 +36,26 @@ const PasswordModal: React.FC<PasswordModalProps> = ({ isOpen, onClose, onSave, 
   };
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-content animate-fade-in" style={{ maxWidth: '400px' }}>
+    <div className="drawer-overlay" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+      <div className="glass-panel animate-fade-in" style={{ background: 'var(--bg-secondary)', width: '100%', maxWidth: '400px', padding: '2rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-          <h2 className="text-xl" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <h2 className="text-xl" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
             <Key size={20} /> Cambiar Contraseña
           </h2>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }}>
+          <button onClick={onClose} className="btn" style={{ padding: '0.5rem' }}>
             <X size={20} />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', margin: 0 }}>
             Establece una nueva contraseña para el usuario:<br/>
             <strong style={{ color: 'var(--text-primary)' }}>{userEmail}</strong>
           </p>
-          <div>
+          <div className="input-group" style={{ marginBottom: 0 }}>
             <input 
               type="password" 
-              className="form-input" 
+              className="input-field" 
               value={password} 
               onChange={e => { setPassword(e.target.value); setError(null); }} 
               required 
@@ -66,7 +66,7 @@ const PasswordModal: React.FC<PasswordModalProps> = ({ isOpen, onClose, onSave, 
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: '0.5rem' }}>
-            <button type="button" onClick={() => { onClose(); setError(null); setPassword(''); }} className="btn" style={{ background: 'var(--bg-secondary)', color: 'var(--text-primary)' }}>
+            <button type="button" onClick={() => { onClose(); setError(null); setPassword(''); }} className="btn">
               Cancelar
             </button>
             <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
