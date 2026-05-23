@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ShoppingCart, Search, Filter, Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import api from '../services/api';
 import Toast from '../components/Toast';
@@ -255,14 +255,21 @@ const Storefront = () => {
           {store.logoUrl ? <img src={store.logoUrl} alt="Logo" style={{ height: '32px', borderRadius: '4px' }} /> : null}
           {store.name}
         </h1>
-        <button onClick={() => setIsCartOpen(true)} className="btn btn-primary" style={{ position: 'relative' }}>
-          <ShoppingCart size={20} />
-          {cart.length > 0 && (
-            <span style={{ position: 'absolute', top: '-8px', right: '-8px', background: 'var(--accent-secondary)', color: 'white', borderRadius: '50%', width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', fontWeight: 'bold' }}>
-              {cart.reduce((acc, item) => acc + item.quantity, 0)}
-            </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          {!user ? (
+            <Link to="/login" style={{ color: 'var(--text-primary)', textDecoration: 'none', fontWeight: 600, fontSize: '0.9rem' }}>Iniciar Sesión</Link>
+          ) : (
+            <Link to={user.role === 'buyer' ? '/buyer/orders' : (user.role === 'admin' ? '/admin/dashboard' : '/seller/dashboard')} style={{ color: 'var(--text-primary)', textDecoration: 'none', fontWeight: 600, fontSize: '0.9rem' }}>Mi Cuenta</Link>
           )}
-        </button>
+          <button onClick={() => setIsCartOpen(true)} className="btn btn-primary" style={{ position: 'relative' }}>
+            <ShoppingCart size={20} />
+            {cart.length > 0 && (
+              <span style={{ position: 'absolute', top: '-8px', right: '-8px', background: 'var(--accent-secondary)', color: 'white', borderRadius: '50%', width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', fontWeight: 'bold' }}>
+                {cart.reduce((acc, item) => acc + item.quantity, 0)}
+              </span>
+            )}
+          </button>
+        </div>
       </nav>
 
       <div className="store-hero" style={{ backgroundImage: `url(${store.bannerUrl || 'https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=2000&auto=format&fit=crop'})` }}>

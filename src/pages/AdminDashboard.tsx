@@ -5,10 +5,12 @@ import { Users, Store as StoreIcon, Activity, Key } from 'lucide-react';
 import api from '../services/api';
 
 const AdminDashboard = () => {
-  const [activeTab, setActiveTab] = useState<'resumen' | 'vendedores' | 'clientes'>('resumen');
+  const [activeTab, setActiveTab] = useState<'resumen' | 'vendedores' | 'clientes' | 'tiendas' | 'productos'>('resumen');
   const [stats, setStats] = useState({ totalSellers: 0, totalBuyers: 0, activeSellers: 0 });
   const [sellers, setSellers] = useState<any[]>([]);
   const [buyers, setBuyers] = useState<any[]>([]);
+  const [globalStores, setGlobalStores] = useState<any[]>([]);
+  const [globalProducts, setGlobalProducts] = useState<any[]>([]);
   const [user, setUser] = useState<any>(null);
   
   const navigate = useNavigate();
@@ -23,15 +25,19 @@ const AdminDashboard = () => {
         }
         setUser(userRes.data);
 
-        const [statsRes, sellersRes, buyersRes] = await Promise.all([
+        const [statsRes, sellersRes, buyersRes, storesRes, productsRes] = await Promise.all([
           api.get('/admin/stats'),
           api.get('/admin/sellers'),
-          api.get('/admin/buyers')
+          api.get('/admin/buyers'),
+          api.get('/admin/stores'),
+          api.get('/admin/products')
         ]);
         
         setStats(statsRes.data);
         setSellers(sellersRes.data);
         setBuyers(buyersRes.data);
+        setGlobalStores(storesRes.data);
+        setGlobalProducts(productsRes.data);
       } catch (error: any) {
         if (error.response?.status === 401) {
           localStorage.removeItem('token');
@@ -90,24 +96,36 @@ const AdminDashboard = () => {
           <p className="text-gray">Gestión global de la plataforma MiTienda.</p>
         </header>
 
-        <div style={{ display: 'flex', gap: '1rem', borderBottom: '1px solid var(--border-color)', marginBottom: '2rem' }}>
+        <div style={{ display: 'flex', gap: '1rem', borderBottom: '1px solid var(--border-color)', marginBottom: '2rem', overflowX: 'auto', paddingBottom: '0.5rem' }}>
           <button 
             onClick={() => setActiveTab('resumen')}
-            style={{ background: 'none', border: 'none', padding: '1rem', color: activeTab === 'resumen' ? 'var(--text-primary)' : 'var(--text-secondary)', borderBottom: activeTab === 'resumen' ? '2px solid var(--accent-primary)' : '2px solid transparent', cursor: 'pointer', fontWeight: 600 }}
+            style={{ whiteSpace: 'nowrap', background: 'none', border: 'none', padding: '1rem', color: activeTab === 'resumen' ? 'var(--text-primary)' : 'var(--text-secondary)', borderBottom: activeTab === 'resumen' ? '2px solid var(--accent-primary)' : '2px solid transparent', cursor: 'pointer', fontWeight: 600 }}
           >
             Resumen
           </button>
           <button 
             onClick={() => setActiveTab('vendedores')}
-            style={{ background: 'none', border: 'none', padding: '1rem', color: activeTab === 'vendedores' ? 'var(--text-primary)' : 'var(--text-secondary)', borderBottom: activeTab === 'vendedores' ? '2px solid var(--accent-primary)' : '2px solid transparent', cursor: 'pointer', fontWeight: 600 }}
+            style={{ whiteSpace: 'nowrap', background: 'none', border: 'none', padding: '1rem', color: activeTab === 'vendedores' ? 'var(--text-primary)' : 'var(--text-secondary)', borderBottom: activeTab === 'vendedores' ? '2px solid var(--accent-primary)' : '2px solid transparent', cursor: 'pointer', fontWeight: 600 }}
           >
             Vendedores
           </button>
           <button 
             onClick={() => setActiveTab('clientes')}
-            style={{ background: 'none', border: 'none', padding: '1rem', color: activeTab === 'clientes' ? 'var(--text-primary)' : 'var(--text-secondary)', borderBottom: activeTab === 'clientes' ? '2px solid var(--accent-primary)' : '2px solid transparent', cursor: 'pointer', fontWeight: 600 }}
+            style={{ whiteSpace: 'nowrap', background: 'none', border: 'none', padding: '1rem', color: activeTab === 'clientes' ? 'var(--text-primary)' : 'var(--text-secondary)', borderBottom: activeTab === 'clientes' ? '2px solid var(--accent-primary)' : '2px solid transparent', cursor: 'pointer', fontWeight: 600 }}
           >
             Clientes
+          </button>
+          <button 
+            onClick={() => setActiveTab('tiendas')}
+            style={{ whiteSpace: 'nowrap', background: 'none', border: 'none', padding: '1rem', color: activeTab === 'tiendas' ? 'var(--text-primary)' : 'var(--text-secondary)', borderBottom: activeTab === 'tiendas' ? '2px solid var(--accent-primary)' : '2px solid transparent', cursor: 'pointer', fontWeight: 600 }}
+          >
+            Tiendas
+          </button>
+          <button 
+            onClick={() => setActiveTab('productos')}
+            style={{ whiteSpace: 'nowrap', background: 'none', border: 'none', padding: '1rem', color: activeTab === 'productos' ? 'var(--text-primary)' : 'var(--text-secondary)', borderBottom: activeTab === 'productos' ? '2px solid var(--accent-primary)' : '2px solid transparent', cursor: 'pointer', fontWeight: 600 }}
+          >
+            Productos
           </button>
         </div>
 
@@ -231,6 +249,107 @@ const AdminDashboard = () => {
                   ))}
                   {buyers.length === 0 && (
                     <tr><td colSpan={4} style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>No hay clientes registrados aún.</td></tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        )}
+
+        {activeTab === 'tiendas' && (
+          <section className="animate-fade-in">
+            <h3 className="text-2xl mb-4">Catálogo Global de Tiendas</h3>
+            <div className="glass-panel" style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '800px' }}>
+                <thead>
+                  <tr style={{ background: 'rgba(255,255,255,0.05)', borderBottom: '1px solid var(--border-color)' }}>
+                    <th style={{ padding: '1.5rem 1rem' }}>Tienda</th>
+                    <th style={{ padding: '1.5rem 1rem' }}>Vendedor</th>
+                    <th style={{ padding: '1.5rem 1rem' }}>Fecha Creación</th>
+                    <th style={{ padding: '1.5rem 1rem' }}>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {globalStores.map(store => (
+                    <tr key={store.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                      <td style={{ padding: '1.5rem 1rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                        {store.logoUrl ? (
+                          <img src={store.logoUrl} alt="Logo" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }} />
+                        ) : (
+                          <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--bg-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><StoreIcon size={20} /></div>
+                        )}
+                        <div>
+                          <div style={{ fontWeight: 600 }}>{store.name}</div>
+                          <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>/{store.slug}</div>
+                        </div>
+                      </td>
+                      <td style={{ padding: '1.5rem 1rem' }}>{store.user?.fullName || 'Desconocido'}</td>
+                      <td style={{ padding: '1.5rem 1rem' }}>{new Date(store.createdAt).toLocaleDateString()}</td>
+                      <td style={{ padding: '1.5rem 1rem' }}>
+                        <a href={`/s/${store.slug}`} target="_blank" rel="noopener noreferrer" className="btn btn-primary" style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem', textDecoration: 'none', display: 'inline-block' }}>
+                          Visitar Tienda
+                        </a>
+                      </td>
+                    </tr>
+                  ))}
+                  {globalStores.length === 0 && (
+                    <tr><td colSpan={4} style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>No hay tiendas en la plataforma.</td></tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        )}
+
+        {activeTab === 'productos' && (
+          <section className="animate-fade-in">
+            <h3 className="text-2xl mb-4">Catálogo Global de Productos</h3>
+            <div className="glass-panel" style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '800px' }}>
+                <thead>
+                  <tr style={{ background: 'rgba(255,255,255,0.05)', borderBottom: '1px solid var(--border-color)' }}>
+                    <th style={{ padding: '1.5rem 1rem' }}>Producto</th>
+                    <th style={{ padding: '1.5rem 1rem' }}>Tienda</th>
+                    <th style={{ padding: '1.5rem 1rem' }}>Precio</th>
+                    <th style={{ padding: '1.5rem 1rem' }}>Stock</th>
+                    <th style={{ padding: '1.5rem 1rem' }}>Estado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {globalProducts.map(product => {
+                    let mainImg = null;
+                    if (product.imageUrl) {
+                      try {
+                        const parsed = JSON.parse(product.imageUrl);
+                        mainImg = Array.isArray(parsed) ? parsed[0] : parsed;
+                      } catch(e) {
+                        mainImg = product.imageUrl;
+                      }
+                    }
+
+                    return (
+                      <tr key={product.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                        <td style={{ padding: '1.5rem 1rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                          {mainImg ? (
+                            <img src={mainImg} alt="Prod" style={{ width: '40px', height: '40px', borderRadius: '4px', objectFit: 'cover' }} />
+                          ) : (
+                            <div style={{ width: '40px', height: '40px', borderRadius: '4px', background: 'var(--bg-secondary)' }} />
+                          )}
+                          <div style={{ fontWeight: 600 }}>{product.name}</div>
+                        </td>
+                        <td style={{ padding: '1.5rem 1rem', color: 'var(--accent-primary)' }}>{product.store?.name || 'Desconocida'}</td>
+                        <td style={{ padding: '1.5rem 1rem' }}>${product.price}</td>
+                        <td style={{ padding: '1.5rem 1rem' }}>{product.stock !== null ? product.stock : '∞'}</td>
+                        <td style={{ padding: '1.5rem 1rem' }}>
+                          <span style={{ padding: '0.2rem 0.6rem', borderRadius: '999px', fontSize: '0.8rem', background: product.isActive ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)', color: product.isActive ? '#4ade80' : '#f87171' }}>
+                            {product.isActive ? 'Activo' : 'Oculto'}
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                  {globalProducts.length === 0 && (
+                    <tr><td colSpan={5} style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>No hay productos subidos a la plataforma.</td></tr>
                   )}
                 </tbody>
               </table>
