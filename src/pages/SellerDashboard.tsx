@@ -4,6 +4,7 @@ import { Search, Plus, Edit2, Trash2, Eye, EyeOff, Star } from 'lucide-react';
 import Sidebar from '../components/layout/Sidebar';
 import ProductModal from '../components/dashboard/ProductModal';
 import CategoryModal from '../components/dashboard/CategoryModal';
+import StoreModal from '../components/dashboard/StoreModal';
 import SellerChatPanel from '../components/dashboard/SellerChatPanel';
 import api from '../services/api';
 import Toast from '../components/Toast';
@@ -38,6 +39,7 @@ const SellerDashboard = () => {
   const [editingProduct, setEditingProduct] = useState<any>(null);
   const [isCategoryModalOpen, setCategoryModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<any>(null);
+  const [isStoreModalOpen, setStoreModalOpen] = useState(false);
   
   // Filters
   const [searchQuery, setSearchQuery] = useState('');
@@ -122,15 +124,12 @@ const SellerDashboard = () => {
   }, [chats, orders, user]);
 
   // Handle Actions
-  const handleCreateStore = async () => {
-    const name = prompt('Nombre de la tienda:');
-    if (!name) return;
+  const handleCreateStore = async (storeData: any) => {
     try {
-      const slug = name.toLowerCase().replace(/\s+/g, '-');
-      const whatsapp = prompt('Número de WhatsApp:') || '123456789';
-      await api.post('/stores', { name, slug, whatsappNumber: whatsapp, layoutStyle: 'modern' });
+      await api.post('/stores', { ...storeData, layoutStyle: 'modern' });
       fetchData();
       setToast('Tienda creada exitosamente. Haz clic en "Subir Banner" para añadir una imagen.');
+      setStoreModalOpen(false);
     } catch (e) {
       alert('Error al crear tienda');
     }
@@ -285,9 +284,11 @@ const SellerDashboard = () => {
         {/* STORES TAB */}
         {activeTab === 'stores' && (
           <section className="animate-fade-in">
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
-              <h3 className="text-xl">Gestión de Tiendas</h3>
-              <button onClick={handleCreateStore} className="btn btn-primary"><Plus size={18}/> Crear Tienda</button>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
+              <h3 className="text-2xl gradient-text">Gestión de Tiendas</h3>
+              <button onClick={() => setStoreModalOpen(true)} className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Plus size={20} /> Nueva Tienda
+              </button>
             </div>
             <div className="grid-cards">
               {stores.map(store => (
@@ -482,9 +483,30 @@ const SellerDashboard = () => {
 
       </main>
 
-      <ProductModal isOpen={isProductModalOpen} onClose={() => setProductModalOpen(false)} onSaved={fetchData} editingProduct={editingProduct} stores={stores} categories={categories} />
-      <CategoryModal isOpen={isCategoryModalOpen} onClose={() => setCategoryModalOpen(false)} onSaved={fetchData} editingCategory={editingCategory} stores={stores} />
       {toast && <Toast message={toast} onClose={() => setToast(null)} />}
+      
+      <ProductModal 
+        isOpen={isProductModalOpen}
+        onClose={() => setProductModalOpen(false)}
+        onSaved={fetchData}
+        editingProduct={editingProduct}
+        stores={stores}
+        categories={categories}
+      />
+
+      <CategoryModal
+        isOpen={isCategoryModalOpen}
+        onClose={() => setCategoryModalOpen(false)}
+        onSaved={fetchData}
+        editingCategory={editingCategory}
+        stores={stores}
+      />
+
+      <StoreModal
+        isOpen={isStoreModalOpen}
+        onClose={() => setStoreModalOpen(false)}
+        onSave={handleCreateStore}
+      />
     </div>
   );
 };

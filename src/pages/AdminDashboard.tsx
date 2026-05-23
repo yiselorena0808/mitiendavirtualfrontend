@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/layout/Sidebar';
+import PasswordModal from '../components/dashboard/PasswordModal';
 import { Users, Store as StoreIcon, Activity, Key } from 'lucide-react';
 import api from '../services/api';
 
@@ -12,6 +13,8 @@ const AdminDashboard = () => {
   const [globalStores, setGlobalStores] = useState<any[]>([]);
   const [globalProducts, setGlobalProducts] = useState<any[]>([]);
   const [user, setUser] = useState<any>(null);
+  const [isPasswordModalOpen, setPasswordModalOpen] = useState(false);
+  const [passwordTarget, setPasswordTarget] = useState<{ id: number, email: string } | null>(null);
   
   const navigate = useNavigate();
 
@@ -70,16 +73,16 @@ const AdminDashboard = () => {
     }
   };
 
-  const handleUpdatePassword = async (userId: number, email: string) => {
-    const newPassword = prompt(`Introduce la nueva contraseña para el usuario ${email}:`);
-    if (!newPassword) return;
-    if (newPassword.length < 6) {
-      alert('La contraseña debe tener al menos 6 caracteres.');
-      return;
-    }
+  const openPasswordModal = (userId: number, email: string) => {
+    setPasswordTarget({ id: userId, email });
+    setPasswordModalOpen(true);
+  };
+
+  const handleUpdatePassword = async (newPassword: string) => {
+    if (!passwordTarget) return;
     try {
-      await api.put(`/admin/users/${userId}/password`, { password: newPassword });
-      alert(`Contraseña actualizada correctamente para ${email}`);
+      await api.put(`/admin/users/${passwordTarget.id}/password`, { password: newPassword });
+      alert(`Contraseña actualizada correctamente para ${passwordTarget.email}`);
     } catch (e) {
       alert('Error al actualizar la contraseña');
     }
@@ -208,7 +211,7 @@ const AdminDashboard = () => {
                           <button className="btn btn-primary" style={{ padding: '0.4rem 0.6rem', fontSize: '0.8rem' }} onClick={() => addSubscriptionDays(seller.id, 30, 'mensual')}>+30D</button>
                         </td>
                         <td style={{ padding: '1.5rem 1rem' }}>
-                          <button onClick={() => handleUpdatePassword(seller.id, seller.email)} className="btn" style={{ padding: '0.4rem 0.6rem', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.2rem' }} title="Cambiar Contraseña">
+                          <button onClick={() => openPasswordModal(seller.id, seller.email)} className="btn" style={{ padding: '0.4rem 0.6rem', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.2rem' }} title="Cambiar Contraseña">
                             <Key size={14} /> Clave
                           </button>
                         </td>
@@ -241,7 +244,7 @@ const AdminDashboard = () => {
                       <td style={{ padding: '1.5rem 1rem', color: 'var(--text-secondary)' }}>{buyer.email}</td>
                       <td style={{ padding: '1.5rem 1rem' }}>{new Date(buyer.createdAt).toLocaleDateString()}</td>
                       <td style={{ padding: '1.5rem 1rem' }}>
-                        <button onClick={() => handleUpdatePassword(buyer.id, buyer.email)} className="btn" style={{ padding: '0.4rem 0.6rem', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
+                        <button onClick={() => openPasswordModal(buyer.id, buyer.email)} className="btn" style={{ padding: '0.4rem 0.6rem', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
                           <Key size={14} /> Reset Clave
                         </button>
                       </td>
@@ -358,6 +361,13 @@ const AdminDashboard = () => {
         )}
 
       </main>
+
+      <PasswordModal 
+        isOpen={isPasswordModalOpen} 
+        onClose={() => setPasswordModalOpen(false)} 
+        onSave={handleUpdatePassword} 
+        userEmail={passwordTarget?.email || ''} 
+      />
     </div>
   );
 };
