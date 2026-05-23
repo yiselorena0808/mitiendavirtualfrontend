@@ -5,6 +5,7 @@ import Sidebar from '../components/layout/Sidebar';
 import ProductModal from '../components/dashboard/ProductModal';
 import CategoryModal from '../components/dashboard/CategoryModal';
 import StoreModal from '../components/dashboard/StoreModal';
+import ConfirmModal from '../components/dashboard/ConfirmModal';
 import SellerChatPanel from '../components/dashboard/SellerChatPanel';
 import api from '../services/api';
 import Toast from '../components/Toast';
@@ -41,6 +42,9 @@ const SellerDashboard = () => {
   const [editingCategory, setEditingCategory] = useState<any>(null);
   const [isStoreModalOpen, setStoreModalOpen] = useState(false);
   
+  // Custom Modals
+  const [confirmModal, setConfirmModal] = useState<{ isOpen: boolean; title: string; message: string; isDangerous: boolean; onConfirm: () => void }>({ isOpen: false, title: '', message: '', isDangerous: false, onConfirm: () => {} });
+
   // Filters
   const [searchQuery, setSearchQuery] = useState('');
   const [storeFilter, setStoreFilter] = useState('');
@@ -131,7 +135,7 @@ const SellerDashboard = () => {
       setToast('Tienda creada exitosamente. Haz clic en "Subir Banner" para añadir una imagen.');
       setStoreModalOpen(false);
     } catch (e) {
-      alert('Error al crear tienda');
+      setToast('Error al crear tienda');
     }
   };
 
@@ -157,45 +161,57 @@ const SellerDashboard = () => {
       await api.put(`/stores/${storeId}`, { [field]: imageUrl });
       fetchData();
       setToast('Imagen de tienda actualizada');
-    } catch (err) {
-      alert('Error subiendo imagen de tienda');
+    } catch (error) {
+      setToast('Error subiendo imagen de tienda');
     }
   };
 
-  const deleteProduct = async (id: number) => {
-    if (!confirm('¿Seguro que deseas eliminar este producto?')) return;
-    try {
-      await api.delete(`/products/${id}`);
-      fetchData();
-      setToast('Producto eliminado');
-    } catch(e) { alert('Error eliminando producto'); }
+  const handleDeleteProduct = async (id: number) => {
+    setConfirmModal({
+      isOpen: true,
+      title: 'Eliminar Producto',
+      message: '¿Estás seguro de que deseas eliminar este producto? Esta acción no se puede deshacer.',
+      isDangerous: true,
+      onConfirm: async () => {
+        try {
+          await api.delete(`/products/${id}`);
+          fetchData();
+          setToast('Producto eliminado exitosamente');
+        } catch(e) { setToast('Error eliminando producto'); }
+      }
+    });
   };
 
-  const toggleProductStatus = async (id: number) => {
+  const toggleProductStatus = async (id: number, currentStatus: boolean) => {
     try {
-      await api.patch(`/products/${id}/toggle-status`);
+      await api.put(`/products/${id}`, { isActive: !currentStatus });
       fetchData();
-      setToast('Estado actualizado');
-    } catch(e) { alert('Error actualizando estado'); }
+      setToast(currentStatus ? 'Producto ocultado' : 'Producto activado');
+    } catch(e) { setToast('Error actualizando estado'); }
   };
 
-  const deleteCategory = async (id: number) => {
-    if (!confirm('¿Eliminar esta categoría?')) return;
-    try {
-      await api.delete(`/categories/${id}`);
-      fetchData();
-      setToast('Categoría eliminada');
-    } catch(e) { alert('Error'); }
+  const handleDeleteCategory = async (id: number) => {
+    setConfirmModal({
+      isOpen: true,
+      title: 'Eliminar Categoría',
+      message: '¿Estás seguro de que deseas eliminar esta categoría? Los productos asociados podrían quedarse sin categoría.',
+      isDangerous: true,
+      onConfirm: async () => {
+        try {
+          await api.delete(`/categories/${id}`);
+          fetchData();
+          setToast('Categoría eliminada exitosamente');
+        } catch(e) { setToast('Error eliminando categoría'); }
+      }
+    });
   };
 
   const updateOrderStatus = async (orderId: number, status: string) => {
     try {
       await api.put(`/orders/${orderId}`, { status });
       setOrders(orders.map(o => o.id === orderId ? { ...o, status } : o));
-      setToast('Estado de la orden actualizado');
-    } catch (e) {
-      alert('Error al actualizar el estado');
-    }
+      setToast('Estado actualizado');
+    } catch(e) { setToast('Error al actualizar el estado'); }
   };
 
   // Derived state
@@ -341,7 +357,7 @@ const SellerDashboard = () => {
                       <td style={{ padding: '1rem' }} className="text-gray">{stores.find(s => s.id === c.storeId)?.name}</td>
                       <td style={{ padding: '1rem', display: 'flex', gap: '0.5rem' }}>
                         <button className="btn" onClick={() => { setEditingCategory(c); setCategoryModalOpen(true); }}><Edit2 size={16}/></button>
-                        <button className="btn" onClick={() => deleteCategory(c.id)}><Trash2 size={16} color="var(--accent-danger)"/></button>
+                        <button className="btn" onClick={() => handleDeleteCategory(c.id)}><Trash2 size={16} color="#ef4444"/></button>
                       </td>
                     </tr>
                   ))}
@@ -404,10 +420,10 @@ const SellerDashboard = () => {
                           {p.isActive ? 'Activo' : 'Oculto'}
                         </span>
                       </td>
-                      <td style={{ padding: '1rem', textAlign: 'right' }}>
-                        <button className="btn" onClick={() => toggleProductStatus(p.id)} title="Alternar Visibilidad">{p.isActive ? <EyeOff size={16}/> : <Eye size={16}/>}</button>
+                      <td style={{ padding: '1rem', display: 'flex', gap: '0.5rem' }}>
                         <button className="btn" onClick={() => { setEditingProduct(p); setProductModalOpen(true); }}><Edit2 size={16}/></button>
-                        <button className="btn" onClick={() => deleteProduct(p.id)}><Trash2 size={16} color="var(--accent-danger)"/></button>
+                        <button className="btn" onClick={() => toggleProductStatus(p.id, p.isActive)} title="Alternar Visibilidad">{p.isActive ? <EyeOff size={16}/> : <Eye size={16}/>}</button>
+                        <button className="btn" onClick={() => handleDeleteProduct(p.id)}><Trash2 size={16} color="#ef4444"/></button>
                       </td>
                     </tr>
                   ))}
@@ -506,6 +522,15 @@ const SellerDashboard = () => {
         isOpen={isStoreModalOpen}
         onClose={() => setStoreModalOpen(false)}
         onSave={handleCreateStore}
+      />
+
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        onClose={() => setConfirmModal({ ...confirmModal, isOpen: false })}
+        onConfirm={confirmModal.onConfirm}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        isDangerous={confirmModal.isDangerous}
       />
     </div>
   );

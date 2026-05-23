@@ -46,7 +46,7 @@ const SellerChatPanel: React.FC<SellerChatPanelProps> = ({ chats }) => {
       setNewMessage('');
       scrollToBottom();
     } catch (e) {
-      alert('Error enviando mensaje');
+      console.error('Error enviando mensaje:', e);
     }
   };
 

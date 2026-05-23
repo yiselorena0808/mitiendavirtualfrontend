@@ -23,6 +23,8 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, onSaved, e
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [isActive, setIsActive] = useState(true);
   const [isFeatured, setIsFeatured] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (editingProduct) {
@@ -60,12 +62,15 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, onSaved, e
       setIsActive(true);
       setIsFeatured(false);
     }
+    setError(null);
   }, [editingProduct, isOpen, stores]);
 
   if (!isOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
+    setError(null);
     try {
       const payload = {
         storeId: parseInt(storeId),
@@ -89,7 +94,9 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, onSaved, e
       onSaved();
       onClose();
     } catch (e) {
-      alert('Error al guardar producto');
+      setError('Error al guardar el producto. Verifica los datos e intenta de nuevo.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -109,7 +116,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, onSaved, e
         const newUrl = res.data.url.startsWith('data:') ? res.data.url : baseUrl + res.data.url;
         setImageUrls(prev => [...prev, newUrl]);
       } catch (err) {
-        alert('Error subiendo imagen ' + file.name);
+        setError('Error subiendo imagen ' + file.name);
       }
     }
   };
@@ -123,6 +130,12 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, onSaved, e
           <h2 className="text-2xl">{editingProduct ? 'Editar Producto' : 'Nuevo Producto'}</h2>
           <button onClick={onClose} className="btn" style={{ padding: '0.5rem' }}><X size={20} /></button>
         </div>
+
+        {error && (
+          <div style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', padding: '1rem', borderRadius: '8px', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
+            {error}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>

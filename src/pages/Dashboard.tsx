@@ -40,7 +40,7 @@ const Dashboard = () => {
         const res = await api.post('/stores', { name, slug, whatsappNumber: whatsapp, layoutStyle: 'modern' });
         setStores([...stores, res.data]);
       } catch (e) {
-        alert('Error al crear tienda');
+        console.error('Error al crear tienda:', e);
       }
     }
   };
@@ -50,7 +50,7 @@ const Dashboard = () => {
       const res = await api.put(`/stores/${storeId}`, { [field]: value });
       setStores(stores.map(s => s.id === storeId ? res.data : s));
     } catch (e) {
-      alert('Error al actualizar tienda');
+      console.error('Error al actualizar tienda:', e);
     }
   };
 
@@ -59,7 +59,7 @@ const Dashboard = () => {
       const res = await api.put(`/orders/${orderId}`, { status });
       setOrders(orders.map(o => o.id === orderId ? res.data : o));
     } catch (e) {
-      alert('Error al actualizar orden');
+      console.error('Error al actualizar orden:', e);
     }
   };
 

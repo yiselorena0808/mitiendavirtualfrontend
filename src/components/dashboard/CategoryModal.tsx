@@ -14,6 +14,7 @@ const CategoryFormModal: React.FC<CategoryFormModalProps> = ({ isOpen, onClose, 
   const [storeId, setStoreId] = useState<string>('');
   const [name, setName] = useState('');
   const [slug, setSlug] = useState('');
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (editingCategory) {
@@ -25,12 +26,14 @@ const CategoryFormModal: React.FC<CategoryFormModalProps> = ({ isOpen, onClose, 
       setName('');
       setSlug('');
     }
+    setError(null);
   }, [editingCategory, isOpen, stores]);
 
   if (!isOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
     try {
       const payload = { storeId: parseInt(storeId), name, slug: slug || name.toLowerCase().replace(/\s+/g, '-') };
       if (editingCategory) {
@@ -41,7 +44,7 @@ const CategoryFormModal: React.FC<CategoryFormModalProps> = ({ isOpen, onClose, 
       onSaved();
       onClose();
     } catch (e) {
-      alert('Error al guardar categoría');
+      setError('Error al guardar categoría');
     }
   };
 
@@ -52,6 +55,13 @@ const CategoryFormModal: React.FC<CategoryFormModalProps> = ({ isOpen, onClose, 
           <h2 className="text-xl">{editingCategory ? 'Editar Categoría' : 'Nueva Categoría'}</h2>
           <button onClick={onClose} className="btn" style={{ padding: '0.5rem' }}><X size={20} /></button>
         </div>
+
+        {error && (
+          <div style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', padding: '1rem', borderRadius: '8px', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
+            {error}
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div className="input-group" style={{ marginBottom: 0 }}>
             <label className="input-label">Tienda</label>

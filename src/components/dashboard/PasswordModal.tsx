@@ -11,13 +11,16 @@ interface PasswordModalProps {
 const PasswordModal: React.FC<PasswordModalProps> = ({ isOpen, onClose, onSave, userEmail }) => {
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   if (!isOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+    
     if (password.length < 6) {
-      alert('La contraseña debe tener al menos 6 caracteres.');
+      setError('La contraseña debe tener al menos 6 caracteres.');
       return;
     }
     setIsSubmitting(true);
@@ -54,15 +57,16 @@ const PasswordModal: React.FC<PasswordModalProps> = ({ isOpen, onClose, onSave, 
               type="password" 
               className="form-input" 
               value={password} 
-              onChange={e => setPassword(e.target.value)} 
+              onChange={e => { setPassword(e.target.value); setError(null); }} 
               required 
               placeholder="Mínimo 6 caracteres"
               autoFocus
             />
+            {error && <p style={{ color: '#ef4444', fontSize: '0.85rem', marginTop: '0.5rem', marginBottom: 0 }}>{error}</p>}
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: '0.5rem' }}>
-            <button type="button" onClick={onClose} className="btn" style={{ background: 'var(--bg-secondary)', color: 'var(--text-primary)' }}>
+            <button type="button" onClick={() => { onClose(); setError(null); setPassword(''); }} className="btn" style={{ background: 'var(--bg-secondary)', color: 'var(--text-primary)' }}>
               Cancelar
             </button>
             <button type="submit" className="btn btn-primary" disabled={isSubmitting}>

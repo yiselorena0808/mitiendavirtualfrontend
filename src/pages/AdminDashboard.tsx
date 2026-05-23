@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/layout/Sidebar';
 import PasswordModal from '../components/dashboard/PasswordModal';
+import ConfirmModal from '../components/dashboard/ConfirmModal';
+import Toast from '../components/Toast';
 import { Users, Store as StoreIcon, Activity, Key } from 'lucide-react';
 import api from '../services/api';
 
@@ -15,6 +17,9 @@ const AdminDashboard = () => {
   const [user, setUser] = useState<any>(null);
   const [isPasswordModalOpen, setPasswordModalOpen] = useState(false);
   const [passwordTarget, setPasswordTarget] = useState<{ id: number, email: string } | null>(null);
+  
+  const [toast, setToast] = useState<string | null>(null);
+  const [confirmModal, setConfirmModal] = useState<{ isOpen: boolean; title: string; message: string; onConfirm: () => void }>({ isOpen: false, title: '', message: '', onConfirm: () => {} });
   
   const navigate = useNavigate();
 
@@ -59,18 +64,25 @@ const AdminDashboard = () => {
       await api.put(`/admin/sellers/${sellerId}`, { isActive: !currentStatus });
       setSellers(sellers.map(s => s.id === sellerId ? { ...s, isActive: !currentStatus } : s));
     } catch (e) {
-      alert('Error al actualizar estado');
+      setToast('Error al actualizar estado del vendedor');
     }
   };
 
   const addSubscriptionDays = async (sellerId: number, days: number, planType: string) => {
-    if (!confirm(`¿Deseas agregar ${days} días y cambiar plan a ${planType}?`)) return;
-    try {
-      const res = await api.put(`/admin/sellers/${sellerId}`, { addDays: days, planType, isActive: true });
-      setSellers(sellers.map(s => s.id === sellerId ? res.data : s));
-    } catch (e) {
-      alert('Error al actualizar suscripción');
-    }
+    setConfirmModal({
+      isOpen: true,
+      title: 'Añadir Suscripción',
+      message: `¿Deseas agregar ${days} días y cambiar plan a ${planType}?`,
+      onConfirm: async () => {
+        try {
+          const res = await api.put(`/admin/sellers/${sellerId}`, { addDays: days, planType, isActive: true });
+          setSellers(sellers.map(s => s.id === sellerId ? res.data : s));
+          setToast(`Suscripción actualizada exitosamente.`);
+        } catch (e) {
+          setToast('Error al actualizar suscripción');
+        }
+      }
+    });
   };
 
   const openPasswordModal = (userId: number, email: string) => {
@@ -82,9 +94,9 @@ const AdminDashboard = () => {
     if (!passwordTarget) return;
     try {
       await api.put(`/admin/users/${passwordTarget.id}/password`, { password: newPassword });
-      alert(`Contraseña actualizada correctamente para ${passwordTarget.email}`);
+      setToast(`Contraseña actualizada correctamente para ${passwordTarget.email}`);
     } catch (e) {
-      alert('Error al actualizar la contraseña');
+      setToast('Error al actualizar la contraseña');
     }
   };
 
@@ -368,6 +380,16 @@ const AdminDashboard = () => {
         onSave={handleUpdatePassword} 
         userEmail={passwordTarget?.email || ''} 
       />
+
+      <ConfirmModal 
+        isOpen={confirmModal.isOpen}
+        onClose={() => setConfirmModal({ ...confirmModal, isOpen: false })}
+        onConfirm={confirmModal.onConfirm}
+        title={confirmModal.title}
+        message={confirmModal.message}
+      />
+
+      {toast && <Toast message={toast} onClose={() => setToast(null)} />}
     </div>
   );
 };
