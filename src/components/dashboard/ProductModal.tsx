@@ -94,22 +94,23 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, onSaved, e
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
 
-    const formData = new FormData();
-    formData.append('image', file);
+    for (const file of files) {
+      const formData = new FormData();
+      formData.append('image', file);
 
-    try {
-      const res = await api.post('/uploads', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
-      // VITE_API_URL includes /api, but the static server serves from the root.
-      const baseUrl = import.meta.env.VITE_API_URL.replace(/\/api\/?$/, '');
-      const newUrl = res.data.url.startsWith('data:') ? res.data.url : baseUrl + res.data.url;
-      setImageUrls(prev => [...prev, newUrl]);
-    } catch (err) {
-      alert('Error subiendo imagen');
+      try {
+        const res = await api.post('/uploads', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        const baseUrl = import.meta.env.VITE_API_URL.replace(/\/api\/?$/, '');
+        const newUrl = res.data.url.startsWith('data:') ? res.data.url : baseUrl + res.data.url;
+        setImageUrls(prev => [...prev, newUrl]);
+      } catch (err) {
+        alert('Error subiendo imagen ' + file.name);
+      }
     }
   };
 
@@ -168,8 +169,8 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, onSaved, e
               <label className="input-label">Imágenes del Producto</label>
               <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
                 <label className="btn btn-primary" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', width: '100%', justifyContent: 'center' }}>
-                  Añadir Imagen
-                  <input type="file" accept="image/*" onChange={handleImageUpload} style={{ display: 'none' }} />
+                  Añadir Imágenes (Selecciona varias)
+                  <input type="file" accept="image/*" multiple onChange={handleImageUpload} style={{ display: 'none' }} />
                 </label>
               </div>
             </div>
