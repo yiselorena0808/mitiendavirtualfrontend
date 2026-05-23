@@ -135,7 +135,13 @@ const SellerDashboard = () => {
     }
   };
 
-  const handleStoreImageUpload = async (storeId: number, field: 'bannerUrl' | 'logoUrl', e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCopyLink = (slug: string) => {
+    const url = `${window.location.origin}/s/${slug}`;
+    navigator.clipboard.writeText(url);
+    setToast('¡Enlace copiado! Ya puedes pegarlo en WhatsApp o redes.');
+  };
+
+  const handleStoreImageUpload = async (storeId: number, field: 'logoUrl' | 'bannerUrl', e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -299,7 +305,10 @@ const SellerDashboard = () => {
                         <input type="file" accept="image/*" onChange={(e) => handleStoreImageUpload(store.id, 'logoUrl', e)} style={{ display: 'none' }} />
                       </label>
                     </div>
-                    <a href={`/s/${store.slug}`} target="_blank" className="btn btn-primary" style={{ width: '100%', marginTop: '0.5rem' }}>Ver Tienda Pública</a>
+                    <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+                      <a href={`/s/${store.slug}`} target="_blank" className="btn btn-primary" style={{ flex: 1, textAlign: 'center' }}>Ver Tienda</a>
+                      <button onClick={() => handleCopyLink(store.slug)} className="btn" style={{ flex: 1 }}>Copiar Link</button>
+                    </div>
                   </div>
                 </div>
               ))}
