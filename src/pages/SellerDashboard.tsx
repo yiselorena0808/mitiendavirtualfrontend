@@ -67,7 +67,8 @@ const SellerDashboard = () => {
     const init = async () => {
       try {
         const userRes = await api.get('/auth/me');
-        if (userRes.data.role !== 'seller') navigate('/buyer/orders');
+        if (userRes.data.role === 'admin') navigate('/admin/dashboard');
+        else if (userRes.data.role !== 'seller') navigate('/buyer/orders');
         setUser(userRes.data);
         await fetchData();
       } catch (error: any) {

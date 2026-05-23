@@ -21,7 +21,8 @@ const BuyerDashboard = () => {
     const fetchDashboard = async () => {
       try {
         const userRes = await api.get('/auth/me');
-        if (userRes.data.role !== 'buyer') navigate('/seller/dashboard');
+        if (userRes.data.role === 'admin') navigate('/admin/dashboard');
+        else if (userRes.data.role !== 'buyer') navigate('/seller/dashboard');
         setUser(userRes.data);
 
         const [ordersRes, storesRes, chatsRes] = await Promise.all([

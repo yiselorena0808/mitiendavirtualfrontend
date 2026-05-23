@@ -40,7 +40,7 @@ const Sidebar: React.FC<SidebarProps> = ({ role }) => {
       </div>
 
       <nav className="sidebar-nav">
-        {role === 'seller' ? (
+        {role === 'seller' && (
           <>
             <NavLink to="/seller/dashboard" end className={({ isActive }) => `sidebar-nav-item ${isActive ? 'active' : ''}`}>
               <LayoutDashboard size={20} /> <span style={{ marginLeft: '0.5rem' }}>Resumen</span>
@@ -61,7 +61,9 @@ const Sidebar: React.FC<SidebarProps> = ({ role }) => {
               <MessageCircle size={20} /> <span style={{ marginLeft: '0.5rem' }}>Mensajes</span>
             </NavLink>
           </>
-        ) : (
+        )}
+
+        {role === 'buyer' && (
           <>
             <NavLink to="/buyer/explore" className={({ isActive }) => `sidebar-nav-item ${isActive ? 'active' : ''}`}>
               <Store size={20} /> <span style={{ marginLeft: '0.5rem' }}>Explorar Tiendas</span>
@@ -81,7 +83,7 @@ const Sidebar: React.FC<SidebarProps> = ({ role }) => {
               Administración
             </div>
             <NavLink to="/admin/dashboard" end className={({ isActive }) => `sidebar-nav-item ${isActive ? 'active' : ''}`}>
-              <ShieldAlert size={20} /> <span style={{ marginLeft: '0.5rem' }}>Gestión de Vendedores</span>
+              <ShieldAlert size={20} /> <span style={{ marginLeft: '0.5rem' }}>Centro de Comando</span>
             </NavLink>
           </>
         )}
