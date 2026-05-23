@@ -39,7 +39,7 @@ const BuyerDashboard = () => {
           navigate('/login');
         } else {
           // Retry
-          setTimeout(init, 5000);
+          setTimeout(fetchDashboard, 5000);
         }
       }
     };

@@ -26,7 +26,7 @@ const AdminDashboard = () => {
           localStorage.removeItem('token');
           navigate('/login');
         } else {
-          setTimeout(fetchSellers, 5000);
+          setTimeout(fetchAdminData, 5000);
         }
       }
     };
