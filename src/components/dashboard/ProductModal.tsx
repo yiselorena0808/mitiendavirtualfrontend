@@ -234,7 +234,9 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, onSaved, e
 
           <div style={{ gridColumn: '1 / -1', display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: '2rem', paddingTop: '1rem', borderTop: '1px solid var(--border-color)' }}>
             <button type="button" onClick={onClose} className="btn">Cancelar</button>
-            <button type="submit" className="btn btn-primary" style={{ padding: '0.75rem 2.5rem' }}>Guardar Producto</button>
+            <button type="submit" className="btn btn-primary" style={{ padding: '0.75rem 2.5rem' }} disabled={isSubmitting}>
+              {isSubmitting ? 'Guardando...' : 'Guardar Producto'}
+            </button>
           </div>
         </form>
       </div>
