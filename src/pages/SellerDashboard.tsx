@@ -225,10 +225,11 @@ const SellerDashboard = () => {
 
           orders.filter(o => o.status === 'completed').forEach(o => {
             const orderDate = new Date(o.createdAt).getTime();
-            totalSales += o.totalPrice;
-            if (orderDate >= today) dailySales += o.totalPrice;
-            if (orderDate >= startOfWeek.getTime()) weeklySales += o.totalPrice;
-            if (orderDate >= startOfMonth) monthlySales += o.totalPrice;
+            const price = Number(o.totalPrice) || 0;
+            totalSales += price;
+            if (orderDate >= today) dailySales += price;
+            if (orderDate >= startOfWeek.getTime()) weeklySales += price;
+            if (orderDate >= startOfMonth) monthlySales += price;
           });
 
           return (
