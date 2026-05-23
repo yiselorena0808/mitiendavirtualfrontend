@@ -25,6 +25,14 @@ const Sidebar: React.FC<SidebarProps> = ({ role }) => {
           <Store size={24} color="white" />
         </div>
         <h2 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0, letterSpacing: '0.5px' }} className="gradient-text">MiTienda</h2>
+        <button 
+          onClick={handleLogout} 
+          className="mobile-only" 
+          style={{ background: 'transparent', border: 'none', color: '#ef4444', padding: '0.5rem', marginLeft: 'auto', cursor: 'pointer' }}
+          title="Cerrar Sesión"
+        >
+          <LogOut size={20} />
+        </button>
       </div>
 
       <div className="sidebar-section-title">

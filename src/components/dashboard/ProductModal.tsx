@@ -96,7 +96,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, onSaved, e
       });
       // VITE_API_URL includes /api, but the static server serves from the root.
       const baseUrl = import.meta.env.VITE_API_URL.replace(/\/api\/?$/, '');
-      setImageUrl(baseUrl + res.data.url);
+      setImageUrl(res.data.url.startsWith('data:') ? res.data.url : baseUrl + res.data.url);
     } catch (err) {
       alert('Error subiendo imagen');
     }

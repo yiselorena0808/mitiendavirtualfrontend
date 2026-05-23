@@ -141,7 +141,7 @@ const SellerDashboard = () => {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       const baseUrl = import.meta.env.VITE_API_URL.replace(/\/api\/?$/, '');
-      const imageUrl = baseUrl + res.data.url;
+      const imageUrl = res.data.url.startsWith('data:') ? res.data.url : baseUrl + res.data.url;
       await api.put(`/stores/${storeId}`, { [field]: imageUrl });
       fetchData();
       setToast('Imagen de tienda actualizada');
