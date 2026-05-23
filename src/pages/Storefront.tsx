@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { ShoppingCart, Search, Filter, Star } from 'lucide-react';
 import api from '../services/api';
 import Toast from '../components/Toast';
@@ -8,6 +8,7 @@ import ChatWidget from '../components/shop/ChatWidget';
 
 const Storefront = () => {
   const { slug } = useParams();
+  const navigate = useNavigate();
   const [store, setStore] = useState<any>(null);
   const [products, setProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
@@ -92,7 +93,10 @@ const Storefront = () => {
 
   const handleCheckout = async (method: 'whatsapp' | 'chat') => {
     if (!user) {
-      setToastMessage('Por favor inicia sesión para completar tu pedido.');
+      setToastMessage('Por favor regístrate para completar tu pedido. Serás redirigido...');
+      setTimeout(() => {
+        navigate('/register', { state: { returnTo: `/s/${slug}` } });
+      }, 2000);
       return;
     }
 

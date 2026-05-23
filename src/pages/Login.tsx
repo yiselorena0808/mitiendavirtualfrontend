@@ -1,18 +1,22 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import api from '../services/api';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
+  const location = useLocation();
+  const returnTo = location.state?.returnTo;
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       const response = await api.post('/auth/login', { email, password });
       localStorage.setItem('token', response.data.token);
-      if (response.data.user.role === 'admin') {
+      if (returnTo) {
+        navigate(returnTo);
+      } else if (response.data.user.role === 'admin') {
         navigate('/admin/dashboard');
       } else if (response.data.user.role === 'seller') {
         navigate('/seller/dashboard');
@@ -52,7 +56,7 @@ const Login = () => {
           <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '1rem' }}>Iniciar Sesión</button>
         </form>
         <p style={{ marginTop: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
-          ¿No tienes cuenta? <Link to="/register" style={{ color: 'var(--accent-primary)', textDecoration: 'none' }}>Regístrate</Link>
+          ¿No tienes cuenta? <Link to="/register" state={location.state} style={{ color: 'var(--accent-primary)', textDecoration: 'none' }}>Regístrate</Link>
         </p>
       </div>
     </div>
