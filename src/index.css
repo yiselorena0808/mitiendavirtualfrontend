@@ -221,6 +221,54 @@ select.input-field option {
   }
 }
 
+/* Sidebar Components */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: var(--bg-glass);
+  border-right: 1px solid var(--border-color);
+  backdrop-filter: blur(10px);
+}
+
+.sidebar-header {
+  padding: 2rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.sidebar-section-title {
+  padding: 1rem 1.5rem 0.5rem 1.5rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-secondary);
+}
+
+.sidebar-nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0 1rem;
+}
+
+.sidebar-footer {
+  padding: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.sidebar-logout-btn {
+  width: 100%;
+  justify-content: center;
+  gap: 0.5rem;
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
 /* Drawer */
 .drawer-overlay {
   position: fixed;
@@ -301,11 +349,41 @@ select.input-field option {
   }
   
   .sidebar {
-    position: relative;
     width: 100%;
     height: auto;
+    min-height: auto;
     border-right: none;
     border-bottom: 1px solid var(--border-color);
+    position: relative;
+  }
+  
+  .sidebar-nav {
+    flex-direction: row;
+    overflow-x: auto;
+    padding: 1rem;
+    gap: 1rem;
+    scrollbar-width: none;
+  }
+  
+  .sidebar-nav::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .sidebar-nav-item {
+    white-space: nowrap;
+  }
+
+  .sidebar-section-title {
+    display: none;
+  }
+
+  .sidebar-header {
+    padding: 1rem;
+    justify-content: space-between;
+  }
+
+  .sidebar-footer {
+    display: none; /* Escondemos el logout gigante, pero en dashboard podríamos añadir un icono */
   }
   
   .main-content {
