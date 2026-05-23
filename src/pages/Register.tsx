@@ -15,8 +15,8 @@ const Register = () => {
       const response = await api.post('/auth/register', { fullName, email, password, role });
       localStorage.setItem('token', response.data.token);
       navigate(role === 'seller' ? '/seller/dashboard' : '/buyer/explore');
-    } catch (error) {
-      alert('Error al registrarse');
+    } catch (error: any) {
+      alert(error.response?.data?.message || 'Error al registrarse');
     }
   };
 

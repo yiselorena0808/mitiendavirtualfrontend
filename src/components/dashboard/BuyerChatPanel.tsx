@@ -52,9 +52,9 @@ const BuyerChatPanel: React.FC<BuyerChatPanelProps> = ({ chats }) => {
   };
 
   return (
-    <div className="glass-panel animate-fade-in" style={{ display: 'flex', height: '600px', overflow: 'hidden' }}>
+    <div className="glass-panel animate-fade-in chat-container">
       {/* Sidebar: Chat List */}
-      <div style={{ width: '300px', borderRight: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column' }}>
+      <div className={`chat-sidebar ${selectedChat ? 'hidden-mobile' : ''}`}>
         <div style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)', background: 'var(--bg-secondary)' }}>
           <h3 className="text-lg">Tus Conversaciones</h3>
         </div>
@@ -82,11 +82,16 @@ const BuyerChatPanel: React.FC<BuyerChatPanelProps> = ({ chats }) => {
       </div>
 
       {/* Main: Chat View */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: 'var(--bg-primary)' }}>
+      <div className={`chat-main ${!selectedChat ? 'hidden-mobile' : ''}`}>
         {selectedChat ? (
           <>
-            <div style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)', background: 'var(--bg-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <h3 className="text-lg">Chat con {selectedChat.store?.name}</h3>
+            <div style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)', background: 'var(--bg-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <button className="mobile-back-btn" onClick={() => setSelectedChat(null)}>
+                  ←
+                </button>
+                <h3 className="text-lg" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{selectedChat.store?.name}</h3>
+              </div>
               <Link to={`/s/${selectedChat.store?.slug}`} className="btn btn-primary" style={{ padding: '0.5rem 1rem', fontSize: '0.8rem' }}>Visitar Tienda</Link>
             </div>
             
@@ -95,7 +100,7 @@ const BuyerChatPanel: React.FC<BuyerChatPanelProps> = ({ chats }) => {
               {messages.map(msg => {
                 const isMe = msg.senderType === 'buyer';
                 return (
-                  <div key={msg.id} style={{ alignSelf: isMe ? 'flex-end' : 'flex-start', maxWidth: '70%', background: isMe ? 'var(--accent-primary)' : 'var(--bg-secondary)', padding: '1rem', borderRadius: '12px', borderBottomRightRadius: isMe ? '4px' : '12px', borderBottomLeftRadius: !isMe ? '4px' : '12px' }}>
+                  <div key={msg.id} className="chat-message-bubble" style={{ alignSelf: isMe ? 'flex-end' : 'flex-start', maxWidth: '70%', background: isMe ? 'var(--accent-primary)' : 'var(--bg-secondary)', padding: '1rem', borderRadius: '12px', borderBottomRightRadius: isMe ? '4px' : '12px', borderBottomLeftRadius: !isMe ? '4px' : '12px', wordBreak: 'break-word' }}>
                     <p style={{ margin: 0, color: 'white' }}>{msg.content}</p>
                   </div>
                 );

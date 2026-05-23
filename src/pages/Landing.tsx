@@ -4,7 +4,7 @@ import { Store, ShoppingBag, Smartphone } from 'lucide-react';
 const Landing = () => {
   return (
     <div className="container" style={{ paddingTop: '4rem', paddingBottom: '4rem' }}>
-      <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4rem' }}>
+      <nav className="landing-nav" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <Store size={32} color="var(--accent-primary)" />
           <h1 className="gradient-text" style={{ fontSize: '1.5rem', fontWeight: 700 }}>MiTiendaVirtual</h1>

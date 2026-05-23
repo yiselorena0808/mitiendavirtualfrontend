@@ -398,6 +398,70 @@ select.input-field option {
   .container {
     padding: 0 1rem;
   }
+
+  /* Split View Chat Responsive */
+  .chat-sidebar {
+    width: 100% !important;
+    border-right: none !important;
+  }
+  
+  .chat-sidebar.hidden-mobile {
+    display: none !important;
+  }
+  
+  .chat-main {
+    width: 100% !important;
+  }
+  
+  .chat-main.hidden-mobile {
+    display: none !important;
+  }
+  
+  .mobile-back-btn {
+    display: block !important;
+  }
+  
+  .chat-message-bubble {
+    max-width: 85% !important;
+  }
+
+  /* Landing Page Nav Responsive */
+  .landing-nav {
+    flex-direction: column !important;
+    gap: 1.5rem !important;
+  }
+}
+
+/* Chat CSS Components */
+.chat-container {
+  display: flex;
+  height: 600px;
+  overflow: hidden;
+}
+
+.chat-sidebar {
+  width: 300px;
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-primary);
+}
+
+.mobile-back-btn {
+  display: none;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  padding: 0.5rem 1rem 0.5rem 0;
+  margin-right: 0.5rem;
+  font-size: 1rem;
+  cursor: pointer;
 }
 
 @keyframes fadeIn {
