@@ -1,10 +1,115 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ShoppingCart, Search, Filter, Star } from 'lucide-react';
+import { ShoppingCart, Search, Filter, Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import api from '../services/api';
 import Toast from '../components/Toast';
 import CartDrawer from '../components/shop/CartDrawer';
 import ChatWidget from '../components/shop/ChatWidget';
+
+const parseImages = (urlStr: string | null): string[] => {
+  if (!urlStr) return [];
+  try {
+    const parsed = JSON.parse(urlStr);
+    return Array.isArray(parsed) ? parsed : [urlStr];
+  } catch(e) {
+    return [urlStr];
+  }
+};
+
+const ProductCard = ({ product, categories, storeStyle, onAddToCart, onImageClick }: any) => {
+  const [currentIdx, setCurrentIdx] = useState(0);
+  const images = parseImages(product.imageUrl);
+  const isOutOfStock = product.stock === 0;
+  const hasDiscount = product.discountPrice && product.discountPrice < product.price;
+
+  const nextImg = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCurrentIdx(i => (i + 1) % images.length);
+  };
+  
+  const prevImg = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCurrentIdx(i => (i - 1 + images.length) % images.length);
+  };
+
+  const cardStyle = () => {
+    switch (storeStyle) {
+      case 'classic': return { borderRadius: '4px', border: '1px solid var(--border-color)', boxShadow: 'none' };
+      case 'minimal': return { borderRadius: '0px', border: 'none', borderBottom: '1px solid var(--border-color)', background: 'transparent', boxShadow: 'none' };
+      default: return {}; 
+    }
+  };
+
+  return (
+    <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', opacity: isOutOfStock ? 0.6 : 1, position: 'relative', ...cardStyle() }}>
+      {product.isFeatured && (
+        <div style={{ position: 'absolute', top: '10px', right: '10px', background: 'var(--accent-secondary)', color: 'white', padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.2rem', zIndex: 2 }}>
+          <Star size={14} fill="currentColor" /> Destacado
+        </div>
+      )}
+      
+      {images.length > 0 ? (
+        <div style={{ position: 'relative', height: '200px', cursor: 'pointer' }} onClick={() => onImageClick(images[currentIdx])}>
+          <div style={{ height: '100%', backgroundImage: `url(${images[currentIdx]})`, backgroundSize: 'cover', backgroundPosition: 'center', transition: 'background-image 0.3s ease' }} />
+          
+          {images.length > 1 && (
+            <>
+              <button 
+                onClick={prevImg}
+                style={{ position: 'absolute', left: '0.5rem', top: '50%', transform: 'translateY(-50%)', background: 'rgba(0,0,0,0.5)', color: 'white', border: 'none', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              >
+                <ChevronLeft size={20} />
+              </button>
+              <button 
+                onClick={nextImg}
+                style={{ position: 'absolute', right: '0.5rem', top: '50%', transform: 'translateY(-50%)', background: 'rgba(0,0,0,0.5)', color: 'white', border: 'none', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              >
+                <ChevronRight size={20} />
+              </button>
+              
+              <div style={{ position: 'absolute', bottom: '0.5rem', left: '0', right: '0', display: 'flex', justifyContent: 'center', gap: '4px' }}>
+                {images.map((_: any, idx: number) => (
+                  <div key={idx} style={{ width: '6px', height: '6px', borderRadius: '50%', background: idx === currentIdx ? 'white' : 'rgba(255,255,255,0.5)' }} />
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+      ) : (
+        <div style={{ height: '200px', background: 'var(--bg-secondary)' }} />
+      )}
+      
+      <div style={{ padding: '1.5rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
+        <div style={{ flex: 1 }}>
+          {product.categoryId && <span style={{ color: 'var(--accent-primary)', fontSize: '0.8rem', fontWeight: 600, textTransform: 'uppercase' }}>{categories.find((c: any) => c.id === product.categoryId)?.name}</span>}
+          <h3 style={{ fontSize: '1.25rem', marginBottom: '0.5rem', marginTop: '0.25rem' }}>{product.name}</h3>
+          <p style={{ color: 'var(--text-secondary)', marginBottom: '1rem', fontSize: '0.9rem' }}>{product.description}</p>
+          
+          <div style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            {hasDiscount ? (
+              <>
+                <span style={{ fontSize: '1.5rem', fontWeight: 600, color: 'var(--text-primary)' }}>${product.discountPrice}</span>
+                <span style={{ fontSize: '1rem', color: 'var(--text-secondary)', textDecoration: 'line-through' }}>${product.price}</span>
+              </>
+            ) : (
+              <span style={{ fontSize: '1.5rem', fontWeight: 600, color: 'var(--text-primary)' }}>${product.price}</span>
+            )}
+          </div>
+        </div>
+
+        {isOutOfStock ? (
+          <button disabled className="btn" style={{ width: '100%', borderRadius: storeStyle === 'classic' ? '4px' : '9999px', background: 'var(--bg-secondary)', color: 'var(--text-secondary)' }}>
+            Agotado
+          </button>
+        ) : (
+          <button onClick={() => onAddToCart(product)} className="btn btn-primary" style={{ width: '100%', borderRadius: storeStyle === 'classic' ? '4px' : '9999px' }}>
+            Añadir al carrito
+          </button>
+        )}
+      </div>
+    </div>
+  );
+};
 
 const Storefront = () => {
   const { slug } = useParams();
@@ -143,14 +248,6 @@ const Storefront = () => {
     return matchesSearch && matchesCategory;
   });
 
-  const getCardStyle = () => {
-    switch (store.layoutStyle) {
-      case 'classic': return { borderRadius: '4px', border: '1px solid var(--border-color)', boxShadow: 'none' };
-      case 'minimal': return { borderRadius: '0px', border: 'none', borderBottom: '1px solid var(--border-color)', background: 'transparent', boxShadow: 'none' };
-      default: return {}; 
-    }
-  };
-
   return (
     <div style={{ paddingBottom: '6rem' }}>
       <nav style={{ padding: '1rem 2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-primary)', position: 'sticky', top: 0, zIndex: 30, borderBottom: '1px solid var(--border-color)' }}>
@@ -218,57 +315,16 @@ const Storefront = () => {
 
         <main style={{ flex: '1 1 500px' }}>
           <div className="grid-cards">
-            {filteredProducts.map(product => {
-              const isOutOfStock = product.stock === 0;
-              const hasDiscount = product.discountPrice && product.discountPrice < product.price;
-
-              return (
-                <div key={product.id} className="glass-panel" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', opacity: isOutOfStock ? 0.6 : 1, position: 'relative', ...getCardStyle() }}>
-                  {product.isFeatured && (
-                    <div style={{ position: 'absolute', top: '10px', right: '10px', background: 'var(--accent-secondary)', color: 'white', padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.2rem', zIndex: 2 }}>
-                      <Star size={14} fill="currentColor" /> Destacado
-                    </div>
-                  )}
-                  {product.imageUrl ? (
-                    <div 
-                      onClick={() => setSelectedImage(product.imageUrl)}
-                      style={{ height: '200px', backgroundImage: `url(${product.imageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center', cursor: 'pointer' }} 
-                    />
-                  ) : (
-                    <div style={{ height: '200px', background: 'var(--bg-secondary)' }} />
-                  )}
-                  
-                  <div style={{ padding: '1.5rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
-                    <div style={{ flex: 1 }}>
-                      {product.categoryId && <span style={{ color: 'var(--accent-primary)', fontSize: '0.8rem', fontWeight: 600, textTransform: 'uppercase' }}>{categories.find(c => c.id === product.categoryId)?.name}</span>}
-                      <h3 style={{ fontSize: '1.25rem', marginBottom: '0.5rem', marginTop: '0.25rem' }}>{product.name}</h3>
-                      <p style={{ color: 'var(--text-secondary)', marginBottom: '1rem', fontSize: '0.9rem' }}>{product.description}</p>
-                      
-                      <div style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        {hasDiscount ? (
-                          <>
-                            <span style={{ fontSize: '1.5rem', fontWeight: 600, color: 'var(--text-primary)' }}>${product.discountPrice}</span>
-                            <span style={{ fontSize: '1rem', color: 'var(--text-secondary)', textDecoration: 'line-through' }}>${product.price}</span>
-                          </>
-                        ) : (
-                          <span style={{ fontSize: '1.5rem', fontWeight: 600, color: 'var(--text-primary)' }}>${product.price}</span>
-                        )}
-                      </div>
-                    </div>
-
-                    {isOutOfStock ? (
-                      <button disabled className="btn" style={{ width: '100%', borderRadius: store.layoutStyle === 'classic' ? '4px' : '9999px', background: 'var(--bg-secondary)', color: 'var(--text-secondary)' }}>
-                        Agotado
-                      </button>
-                    ) : (
-                      <button onClick={() => addToCart(product)} className="btn btn-primary" style={{ width: '100%', borderRadius: store.layoutStyle === 'classic' ? '4px' : '9999px' }}>
-                        Añadir al carrito
-                      </button>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
+            {filteredProducts.map(product => (
+              <ProductCard 
+                key={product.id}
+                product={product}
+                categories={categories}
+                storeStyle={store.layoutStyle}
+                onAddToCart={addToCart}
+                onImageClick={setSelectedImage}
+              />
+            ))}
             {filteredProducts.length === 0 && <div className="glass-panel" style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '4rem 2rem' }}>
               <Search size={48} color="var(--text-secondary)" style={{ margin: '0 auto 1rem auto', opacity: 0.5 }} />
               <h3 className="text-xl">No se encontraron productos</h3>

@@ -20,7 +20,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, onSaved, e
   const [price, setPrice] = useState<string>('');
   const [discountPrice, setDiscountPrice] = useState<string>('');
   const [stock, setStock] = useState<string>('');
-  const [imageUrl, setImageUrl] = useState('');
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [isActive, setIsActive] = useState(true);
   const [isFeatured, setIsFeatured] = useState(false);
 
@@ -34,7 +34,17 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, onSaved, e
       setPrice(editingProduct.price?.toString() || '');
       setDiscountPrice(editingProduct.discountPrice?.toString() || '');
       setStock(editingProduct.stock?.toString() || '');
-      setImageUrl(editingProduct.imageUrl || '');
+      
+      let parsedUrls: string[] = [];
+      if (editingProduct.imageUrl) {
+        try {
+          parsedUrls = JSON.parse(editingProduct.imageUrl);
+          if (!Array.isArray(parsedUrls)) parsedUrls = [editingProduct.imageUrl];
+        } catch (e) {
+          parsedUrls = [editingProduct.imageUrl];
+        }
+      }
+      setImageUrls(parsedUrls);
       setIsActive(editingProduct.isActive ?? true);
       setIsFeatured(editingProduct.isFeatured ?? false);
     } else {
@@ -46,7 +56,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, onSaved, e
       setPrice('');
       setDiscountPrice('');
       setStock('');
-      setImageUrl('');
+      setImageUrls([]);
       setIsActive(true);
       setIsFeatured(false);
     }
@@ -66,7 +76,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, onSaved, e
         price: parseFloat(price),
         discountPrice: discountPrice ? parseFloat(discountPrice) : null,
         stock: stock ? parseInt(stock) : null,
-        imageUrl,
+        imageUrl: imageUrls.length > 0 ? JSON.stringify(imageUrls) : '',
         isActive,
         isFeatured
       };
@@ -96,7 +106,8 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, onSaved, e
       });
       // VITE_API_URL includes /api, but the static server serves from the root.
       const baseUrl = import.meta.env.VITE_API_URL.replace(/\/api\/?$/, '');
-      setImageUrl(res.data.url.startsWith('data:') ? res.data.url : baseUrl + res.data.url);
+      const newUrl = res.data.url.startsWith('data:') ? res.data.url : baseUrl + res.data.url;
+      setImageUrls(prev => [...prev, newUrl]);
     } catch (err) {
       alert('Error subiendo imagen');
     }
@@ -154,27 +165,39 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, onSaved, e
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <div className="input-group" style={{ marginBottom: 0 }}>
-              <label className="input-label">URL o Subir Imagen</label>
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
-                <input type="text" className="input-field" placeholder="https://..." value={imageUrl} onChange={e => setImageUrl(e.target.value)} />
-                <label className="btn" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
-                  Subir
+              <label className="input-label">Imágenes del Producto</label>
+              <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
+                <label className="btn btn-primary" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', width: '100%', justifyContent: 'center' }}>
+                  Añadir Imagen
                   <input type="file" accept="image/*" onChange={handleImageUpload} style={{ display: 'none' }} />
                 </label>
               </div>
             </div>
             
-            {/* Image Preview */}
-            <div style={{ height: '200px', background: 'rgba(0,0,0,0.2)', border: '1px dashed var(--border-color)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-              {imageUrl ? (
-                <img src={imageUrl} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'contain' }} onError={(e) => (e.currentTarget.style.display = 'none')} />
-              ) : (
+            {/* Image Preview Grid */}
+            {imageUrls.length > 0 ? (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: '1rem', background: 'rgba(0,0,0,0.2)', padding: '1rem', borderRadius: '8px', border: '1px dashed var(--border-color)' }}>
+                {imageUrls.map((url, idx) => (
+                  <div key={idx} style={{ position: 'relative', height: '100px', borderRadius: '4px', overflow: 'hidden' }}>
+                    <img src={url} alt={`Preview ${idx}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <button 
+                      type="button"
+                      onClick={() => setImageUrls(prev => prev.filter((_, i) => i !== idx))}
+                      style={{ position: 'absolute', top: '4px', right: '4px', background: 'rgba(0,0,0,0.7)', color: 'white', border: 'none', borderRadius: '50%', width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div style={{ height: '200px', background: 'rgba(0,0,0,0.2)', border: '1px dashed var(--border-color)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
                 <div style={{ textAlign: 'center', color: 'var(--text-secondary)' }}>
                   <ImageIcon size={48} style={{ opacity: 0.5, marginBottom: '0.5rem' }} />
-                  <p>Vista previa</p>
+                  <p>Aún no hay imágenes</p>
                 </div>
-              )}
-            </div>
+              </div>
+            )}
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
               <div className="input-group" style={{ marginBottom: 0 }}>
