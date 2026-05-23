@@ -18,8 +18,13 @@ const Dashboard = () => {
         setStores(storesRes.data);
         const ordersRes = await api.get('/orders');
         setOrders(ordersRes.data);
-      } catch (error) {
-        navigate('/login');
+      } catch (error: any) {
+        if (error.response?.status === 401) {
+          localStorage.removeItem('token');
+          navigate('/login');
+        } else {
+          setTimeout(fetchDashboard, 5000);
+        }
       }
     };
     fetchDashboard();

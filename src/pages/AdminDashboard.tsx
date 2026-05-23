@@ -21,8 +21,13 @@ const AdminDashboard = () => {
 
         const res = await api.get('/admin/sellers');
         setSellers(res.data);
-      } catch (error) {
-        navigate('/login');
+      } catch (error: any) {
+        if (error.response?.status === 401) {
+          localStorage.removeItem('token');
+          navigate('/login');
+        } else {
+          setTimeout(fetchSellers, 5000);
+        }
       }
     };
     fetchAdminData();

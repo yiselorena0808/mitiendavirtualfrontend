@@ -70,8 +70,14 @@ const SellerDashboard = () => {
         if (userRes.data.role !== 'seller') navigate('/buyer/orders');
         setUser(userRes.data);
         await fetchData();
-      } catch (error) {
-        navigate('/login');
+      } catch (error: any) {
+        if (error.response?.status === 401) {
+          localStorage.removeItem('token');
+          navigate('/login');
+        } else {
+          setToast('Conectando al servidor (puede tardar si estaba en reposo)...');
+          setTimeout(init, 5000);
+        }
       }
     };
     init();

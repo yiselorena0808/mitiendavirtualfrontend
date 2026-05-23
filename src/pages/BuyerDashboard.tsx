@@ -33,8 +33,14 @@ const BuyerDashboard = () => {
         setOrders(ordersRes.data);
         setStores(storesRes.data);
         setChats(chatsRes.data);
-      } catch (error) {
-        navigate('/login');
+      } catch (error: any) {
+        if (error.response?.status === 401) {
+          localStorage.removeItem('token');
+          navigate('/login');
+        } else {
+          // Retry
+          setTimeout(init, 5000);
+        }
       }
     };
     fetchDashboard();

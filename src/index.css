@@ -432,6 +432,16 @@ select.input-field option {
   }
 }
 
+.mobile-only {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobile-only {
+    display: inline-flex;
+  }
+}
+
 /* Chat CSS Components */
 .chat-container {
   display: flex;
