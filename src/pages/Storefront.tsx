@@ -19,6 +19,7 @@ const Storefront = () => {
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   useEffect(() => {
     // Check if user is logged in
@@ -229,7 +230,10 @@ const Storefront = () => {
                     </div>
                   )}
                   {product.imageUrl ? (
-                    <div style={{ height: '200px', backgroundImage: `url(${product.imageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
+                    <div 
+                      onClick={() => setSelectedImage(product.imageUrl)}
+                      style={{ height: '200px', backgroundImage: `url(${product.imageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center', cursor: 'pointer' }} 
+                    />
                   ) : (
                     <div style={{ height: '200px', background: 'var(--bg-secondary)' }} />
                   )}
@@ -275,12 +279,27 @@ const Storefront = () => {
       </div>
 
       <CartDrawer 
-        isOpen={isCartOpen} 
-        onClose={() => setIsCartOpen(false)} 
-        cart={cart} 
-        total={total} 
-        onCheckout={handleCheckout} 
+        isOpen={isCartOpen}
+        onClose={() => setIsCartOpen(false)}
+        cart={cart}
+        total={total}
+        onCheckout={handleCheckout}
       />
+
+      {selectedImage && (
+        <div 
+          onClick={() => setSelectedImage(null)}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem', cursor: 'pointer' }}
+        >
+          <img src={selectedImage} style={{ maxWidth: '100%', maxHeight: '100%', borderRadius: '8px', boxShadow: '0 10px 25px rgba(0,0,0,0.5)' }} alt="Producto" />
+          <button 
+            onClick={() => setSelectedImage(null)}
+            style={{ position: 'absolute', top: '2rem', right: '2rem', background: 'white', border: 'none', borderRadius: '50%', width: '40px', height: '40px', fontSize: '1.5rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'black' }}
+          >
+            ×
+          </button>
+        </div>
+      )}
 
       <ChatWidget 
         storeId={store.id} 
