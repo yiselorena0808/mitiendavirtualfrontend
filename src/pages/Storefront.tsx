@@ -170,76 +170,92 @@ const Storefront = () => {
         </div>
       </div>
 
-      <div className="container" style={{ display: 'flex', gap: '3rem', flexWrap: 'wrap' }}>
-        <aside style={{ flex: '0 0 250px' }}>
-          <div style={{ position: 'sticky', top: '6rem' }}>
-            <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem', color: 'var(--text-secondary)', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
-              <Search size={16} /> Buscar
-            </h3>
-            <div style={{ position: 'relative', marginBottom: '2rem' }}>
-              <input 
-                type="text" 
-                placeholder="Ej. Zapatos, Ropa..." 
-                className="input-field" 
-                value={searchTerm}
-                onChange={e => setSearchTerm(e.target.value)}
-                style={{ paddingLeft: '2.5rem', borderRadius: '9999px', background: 'var(--bg-glass)', border: '1px solid rgba(255,255,255,0.1)' }}
-              />
-              <Search size={18} color="var(--text-secondary)" style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)' }} />
-            </div>
-
-            {categories.length > 0 && (
-              <div style={{ marginBottom: '2rem' }}>
-                <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem', color: 'var(--text-secondary)', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                  <Filter size={16} /> Categorías
-                </h3>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                  <button 
-                    onClick={() => setSelectedCategory(null)}
-                    style={{ 
-                      padding: '0.5rem 1.25rem', 
-                      borderRadius: '9999px', 
-                      border: selectedCategory === null ? '1px solid var(--accent-primary)' : '1px solid rgba(255,255,255,0.1)', 
-                      background: selectedCategory === null ? 'rgba(99, 102, 241, 0.15)' : 'var(--bg-glass)', 
-                      color: selectedCategory === null ? 'var(--accent-primary)' : 'var(--text-primary)', 
-                      cursor: 'pointer', 
-                      fontWeight: 500,
-                      transition: 'all 0.3s ease',
-                      boxShadow: selectedCategory === null ? '0 0 10px rgba(99, 102, 241, 0.2)' : 'none'
-                    }}
-                    onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
-                    onMouseLeave={e => e.currentTarget.style.transform = 'none'}
-                  >
-                    Todas
-                  </button>
-                  {categories.map((cat: any) => (
-                    <button 
-                      key={cat.id}
-                      onClick={() => setSelectedCategory(cat.id)}
-                      style={{ 
-                        padding: '0.5rem 1.25rem', 
-                        borderRadius: '9999px', 
-                        border: selectedCategory === cat.id ? '1px solid var(--accent-primary)' : '1px solid rgba(255,255,255,0.1)', 
-                        background: selectedCategory === cat.id ? 'rgba(99, 102, 241, 0.15)' : 'var(--bg-glass)', 
-                        color: selectedCategory === cat.id ? 'var(--accent-primary)' : 'var(--text-primary)', 
-                        cursor: 'pointer', 
-                        fontWeight: 500,
-                        transition: 'all 0.3s ease',
-                        boxShadow: selectedCategory === cat.id ? '0 0 10px rgba(99, 102, 241, 0.2)' : 'none'
-                      }}
-                      onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
-                      onMouseLeave={e => e.currentTarget.style.transform = 'none'}
-                    >
-                      {cat.name}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
+      <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+        
+        {/* Barra de Búsqueda Centrada */}
+        <div style={{ maxWidth: '600px', margin: '0 auto', width: '100%' }}>
+          <div style={{ position: 'relative' }}>
+            <input 
+              type="text" 
+              placeholder="¿Qué estás buscando hoy?" 
+              className="input-field" 
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              style={{ 
+                paddingLeft: '3rem', 
+                paddingRight: '1.5rem',
+                paddingTop: '1rem',
+                paddingBottom: '1rem',
+                borderRadius: '16px', 
+                background: 'var(--bg-glass)', 
+                border: '1px solid rgba(255,255,255,0.1)',
+                fontSize: '1.1rem',
+                boxShadow: '0 8px 32px rgba(0,0,0,0.2)'
+              }}
+            />
+            <Search size={22} color="var(--text-secondary)" style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)' }} />
           </div>
-        </aside>
+        </div>
 
-        <main style={{ flex: '1 1 500px' }}>
+        {/* Categorías como Tabs Horizontales */}
+        {categories.length > 0 && (
+          <div style={{ 
+            display: 'flex', 
+            overflowX: 'auto', 
+            gap: '1rem', 
+            paddingBottom: '1rem', 
+            marginBottom: '1rem',
+            borderBottom: '1px solid rgba(255,255,255,0.05)',
+            WebkitOverflowScrolling: 'touch',
+            scrollbarWidth: 'none' /* Firefox */
+          }}>
+            <button 
+              onClick={() => setSelectedCategory(null)}
+              style={{ 
+                background: 'transparent',
+                border: 'none',
+                padding: '0.5rem 0',
+                color: selectedCategory === null ? 'var(--text-primary)' : 'var(--text-secondary)',
+                fontWeight: selectedCategory === null ? 600 : 400,
+                fontSize: '1.1rem',
+                cursor: 'pointer',
+                whiteSpace: 'nowrap',
+                position: 'relative',
+                transition: 'color 0.3s ease'
+              }}
+            >
+              Todos los Productos
+              {selectedCategory === null && (
+                <div style={{ position: 'absolute', bottom: '-17px', left: 0, width: '100%', height: '3px', background: 'var(--accent-primary)', borderRadius: '3px' }} />
+              )}
+            </button>
+            {categories.map((cat: any) => (
+              <button 
+                key={cat.id}
+                onClick={() => setSelectedCategory(cat.id)}
+                style={{ 
+                  background: 'transparent',
+                  border: 'none',
+                  padding: '0.5rem 0',
+                  color: selectedCategory === cat.id ? 'var(--text-primary)' : 'var(--text-secondary)',
+                  fontWeight: selectedCategory === cat.id ? 600 : 400,
+                  fontSize: '1.1rem',
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  position: 'relative',
+                  transition: 'color 0.3s ease'
+                }}
+              >
+                {cat.name}
+                {selectedCategory === cat.id && (
+                  <div style={{ position: 'absolute', bottom: '-17px', left: 0, width: '100%', height: '3px', background: 'var(--accent-primary)', borderRadius: '3px' }} />
+                )}
+              </button>
+            ))}
+          </div>
+        )}
+
+        <main>
           <div className="grid-cards">
             {filteredProducts.map(product => {
               const isOutOfStock = product.stock === 0;
@@ -281,7 +297,7 @@ const Storefront = () => {
                         Agotado
                       </button>
                     ) : (
-                      <button onClick={() => addToCart(product)} className="btn btn-primary" style={{ width: '100%', borderRadius: store.layoutStyle === 'classic' ? '4px' : '9999px' }}>
+                      <button onClick={() => addToCart(product)} className="btn-primary btn" style={{ width: '100%', borderRadius: store.layoutStyle === 'classic' ? '4px' : '9999px' }}>
                         Añadir al carrito
                       </button>
                     )}
